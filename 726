@@ -1,0 +1,55 @@
+class Solution {
+    private int i = 0;
+
+    public String countOfAtoms(String formula) {
+        Map<String, Integer> counts = parse(formula);
+        TreeMap<String, Integer> sorted = new TreeMap<>(counts);
+
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : sorted.entrySet()) {
+            sb.append(entry.getKey());
+            if (entry.getValue() > 1) {
+                sb.append(entry.getValue());
+            }
+        }
+        return sb.toString();
+    }
+
+    private Map<String, Integer> parse(String formula) {
+        int n = formula.length();
+        Map<String, Integer> current = new HashMap<>();
+
+        while (i < n && formula.charAt(i) != ')') {
+            if (formula.charAt(i) == '(') {
+                i++;
+                Map<String, Integer> inner = parse(formula);
+                i++;
+                int mult = parseNumber(formula);
+                for (Map.Entry<String, Integer> entry : inner.entrySet()) {
+                    String atom = entry.getKey();
+                    current.put(atom, current.getOrDefault(atom, 0) + entry.getValue() * mult);
+                }
+            } else {
+                int start = i++;
+                while (i < n && Character.isLowerCase(formula.charAt(i))) {
+                    i++;
+                }
+                String atom = formula.substring(start, i);
+                int count = parseNumber(formula);
+                current.put(atom, current.getOrDefault(atom, 0) + count);
+            }
+        }
+
+        return current;
+    }
+
+    private int parseNumber(String formula) {
+        int n = formula.length();
+        int num = 0;
+        while (i < n && Character.isDigit(formula.charAt(i))) {
+            num = num * 10 + (formula.charAt(i) - '0');
+            i++;
+        }
+        return num == 0 ? 1 : num;
+    }
+}
