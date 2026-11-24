@@ -1,0 +1,38 @@
+class Solution {
+    public boolean parseBoolExpr(String expression) {
+        Deque<Character> stack = new ArrayDeque<>();
+
+        for (char ch : expression.toCharArray()) {
+            if (ch == ',' || ch == '(') {
+                continue;
+            }
+
+            if (ch == ')') {
+                boolean hasTrue = false;
+                boolean hasFalse = false;
+
+                while (stack.peek() == 't' || stack.peek() == 'f') {
+                    char val = stack.pop();
+                    if (val == 't') {
+                        hasTrue = true;
+                    } else {
+                        hasFalse = true;
+                    }
+                }
+
+                char op = stack.pop();
+                if (op == '!') {
+                    stack.push(hasFalse ? 't' : 'f');
+                } else if (op == '&') {
+                    stack.push(hasFalse ? 'f' : 't');
+                } else {
+                    stack.push(hasTrue ? 't' : 'f');
+                }
+            } else {
+                stack.push(ch);
+            }
+        }
+
+        return stack.peek() == 't';
+    }
+}
